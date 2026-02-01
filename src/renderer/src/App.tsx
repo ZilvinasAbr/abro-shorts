@@ -28,7 +28,7 @@ function Launcher(): React.JSX.Element {
   }
 
   return (
-    <div className="flex h-[420px] flex-col overflow-hidden rounded-xl border border-border/50 bg-background/80 shadow-2xl backdrop-blur-xl">
+    <div className="flex h-[420px] flex-col overflow-hidden rounded-xl bg-background/80 shadow-2xl backdrop-blur-xl">
       <SearchInput ref={inputRef} />
       <CommandList commands={filteredCommands} />
       <CommandForm />
@@ -53,9 +53,7 @@ function Launcher(): React.JSX.Element {
 function App(): React.JSX.Element {
   return (
     <AppProvider>
-      <div className="p-2">
-        <Launcher />
-      </div>
+      <Launcher />
     </AppProvider>
   )
 }
