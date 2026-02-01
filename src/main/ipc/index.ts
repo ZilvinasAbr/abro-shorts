@@ -1,9 +1,9 @@
 import { ipcMain } from 'electron'
+import type { Settings } from '../../shared/types'
+import { loadSettings, saveSettings } from '../storage/settings'
+import { incrementUsage, loadUsageStats } from '../storage/usage'
 import { registerCommandHandlers } from './commands'
 import { registerExecutionHandlers } from './execution'
-import { loadSettings, saveSettings } from '../storage/settings'
-import { loadUsageStats, incrementUsage } from '../storage/usage'
-import type { Settings } from '../../shared/types'
 
 export function registerAllHandlers(): void {
   registerCommandHandlers()

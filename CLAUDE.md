@@ -7,8 +7,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 pnpm dev         # Start development with hot reload
 pnpm build       # Type-check and build for production
-pnpm lint        # Run ESLint
-pnpm format      # Run Prettier
+pnpm check       # Run Biome (format, lint, organize imports)
+pnpm lint        # Run Biome linter only
+pnpm format      # Run Biome formatter only
 pnpm typecheck   # Run TypeScript type-checking only
 ```
 
@@ -46,3 +47,16 @@ Two separate tsconfig files:
 ### IPC Communication
 
 Main process exposes APIs to renderer through preload scripts using `contextBridge.exposeInMainWorld()`. The renderer accesses these via `window.electron` and `window.api`.
+
+## Git Workflow
+
+### Committing Changes
+
+Pre-commit hooks automatically run Biome and TypeScript type-checking.
+
+When working on tasks, commit incremental changes that make logical sense:
+
+- Commit after completing a distinct, working unit of functionality
+- Each commit should leave the codebase in a valid state
+- Write clear commit messages describing what changed and why
+- Prefer smaller, focused commits over large monolithic ones

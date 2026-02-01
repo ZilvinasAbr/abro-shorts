@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
+import { createContext, type ReactNode, useContext, useEffect, useReducer } from 'react'
 import type { Command, UsageStats } from '../../../shared/types'
 
 interface AppState {
@@ -100,7 +100,7 @@ export function AppProvider({ children }: { children: ReactNode }): React.JSX.El
       unsubscribeToggle()
       unsubscribeTheme()
     }
-  }, [])
+  }, [loadCommands])
 
   return (
     <AppContext.Provider value={{ state, dispatch, loadCommands }}>{children}</AppContext.Provider>

@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
-import { loadCommands, saveCommand, deleteCommand } from '../storage/commands'
 import type { Command } from '../../shared/types'
+import { deleteCommand, loadCommands, saveCommand } from '../storage/commands'
 
 export function registerCommandHandlers(): void {
   ipcMain.handle('abroshorts:commands:load', async () => {

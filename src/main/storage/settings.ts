@@ -1,6 +1,6 @@
+import { promises as fs } from 'node:fs'
+import path from 'node:path'
 import { app } from 'electron'
-import { promises as fs } from 'fs'
-import path from 'path'
 import type { Settings } from '../../shared/types'
 import { DEFAULT_SETTINGS } from '../../shared/types'
 
