@@ -6,6 +6,12 @@ import {
   ContextMenuItem,
   ContextMenuTrigger
 } from '@/components/ui/context-menu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { useAppContext } from '../context/AppContext'
 import { useCommands } from '../hooks/useCommands'
 
@@ -51,7 +57,24 @@ export function CommandItem({
             <div className="truncate font-medium">{command.name}</div>
             <div className="truncate text-xs text-muted-foreground">{command.command}</div>
           </div>
-          <MoreHorizontalIcon className="size-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              onClick={(e) => e.stopPropagation()}
+              className="rounded p-1 opacity-0 transition-opacity hover:bg-accent group-hover:opacity-100"
+            >
+              <MoreHorizontalIcon className="size-4 shrink-0 text-muted-foreground" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleEdit}>
+                <PencilIcon className="mr-2 size-4" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDelete} variant="destructive">
+                <TrashIcon className="mr-2 size-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
