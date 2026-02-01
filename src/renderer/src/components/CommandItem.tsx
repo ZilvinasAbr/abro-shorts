@@ -1,5 +1,4 @@
-import { TerminalIcon, MoreHorizontalIcon, PencilIcon, TrashIcon } from 'lucide-react'
-import type { Command } from '../../../shared/types'
+import { MoreHorizontalIcon, PencilIcon, TerminalIcon, TrashIcon } from 'lucide-react'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -12,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import type { Command } from '../../../shared/types'
 import { useAppContext } from '../context/AppContext'
 import { useCommands } from '../hooks/useCommands'
 

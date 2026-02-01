@@ -1,10 +1,10 @@
-import { useRef, useEffect } from 'react'
-import { AppProvider, useAppContext } from './context/AppContext'
-import { SearchInput } from './components/SearchInput'
-import { CommandList } from './components/CommandList'
+import { useEffect, useRef } from 'react'
 import { CommandForm } from './components/CommandForm'
-import { useSearch } from './hooks/useSearch'
+import { CommandList } from './components/CommandList'
+import { SearchInput } from './components/SearchInput'
+import { AppProvider, useAppContext } from './context/AppContext'
 import { useKeyboard } from './hooks/useKeyboard'
+import { useSearch } from './hooks/useSearch'
 
 function Launcher(): React.JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null)

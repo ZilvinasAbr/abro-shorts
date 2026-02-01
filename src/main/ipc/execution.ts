@@ -1,5 +1,5 @@
+import { exec } from 'node:child_process'
 import { ipcMain } from 'electron'
-import { exec } from 'child_process'
 import type { Command } from '../../shared/types'
 
 export function registerExecutionHandlers(): void {

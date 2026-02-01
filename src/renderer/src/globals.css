@@ -120,7 +120,7 @@
   html,
   body {
     @apply text-foreground;
-    background: transparent !important;
+    background: transparent;
     overflow: hidden;
   }
 }

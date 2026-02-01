@@ -1,5 +1,5 @@
-import { forwardRef } from 'react'
 import { SearchIcon } from 'lucide-react'
+import { forwardRef } from 'react'
 import { useAppContext } from '../context/AppContext'
 
 interface SearchInputProps {
@@ -20,7 +20,6 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           onChange={(e) => dispatch({ type: 'SET_SEARCH_QUERY', payload: e.target.value })}
           placeholder={placeholder}
           className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
-          autoFocus
         />
       </div>
     )

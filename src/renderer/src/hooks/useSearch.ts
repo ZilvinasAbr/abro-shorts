@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
 import Fuse from 'fuse.js'
+import { useMemo } from 'react'
 import type { Command, UsageStats } from '../../../shared/types'
 
 interface UseSearchOptions {

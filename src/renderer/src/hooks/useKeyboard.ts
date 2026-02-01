@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import type { Command } from '../../../shared/types'
 import { useAppContext } from '../context/AppContext'
 import { useCommands } from './useCommands'

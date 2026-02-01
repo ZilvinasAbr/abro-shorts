@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react'
 import { PlusIcon } from 'lucide-react'
-import type { Command } from '../../../shared/types'
-import { CommandItem } from './CommandItem'
-import { useAppContext } from '../context/AppContext'
+import { useEffect, useRef } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import type { Command } from '../../../shared/types'
+import { useAppContext } from '../context/AppContext'
+import { CommandItem } from './CommandItem'
 
 interface CommandListProps {
   commands: Command[]
