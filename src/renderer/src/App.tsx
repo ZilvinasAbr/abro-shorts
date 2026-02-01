@@ -1,34 +1,56 @@
-import Versions from './components/Versions'
-import electronLogo from './assets/electron.svg'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 function App(): React.JSX.Element {
-  const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
+  const [inputValue, setInputValue] = useState('')
 
   return (
-    <>
-      <img alt="logo" className="logo" src={electronLogo} />
-      <div className="creator">Powered by electron-vite</div>
-      <div className="text">
-        Build an Electron app with <span className="react">React</span>
-        &nbsp;and <span className="ts">TypeScript</span>
-      </div>
-      <p className="tip">
-        Please try pressing <code>F12</code> to open the devTool
-      </p>
-      <div className="actions">
-        <div className="action">
-          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-            Documentation
-          </a>
-        </div>
-        <div className="action">
-          <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
-            Send IPC
-          </a>
-        </div>
-      </div>
-      <Versions></Versions>
-    </>
+    <div className="flex min-h-screen items-center justify-center p-8">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Tailwind + shadcn/ui</CardTitle>
+          <CardDescription>
+            Components are working! Try the button and input below.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="test-input">Test Input</Label>
+            <Input
+              id="test-input"
+              placeholder="Type something..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={() => alert(`You typed: ${inputValue}`)}>
+              Submit
+            </Button>
+            <Button variant="secondary" onClick={() => setInputValue('')}>
+              Clear
+            </Button>
+            <Button variant="destructive" onClick={() => alert('Destructive!')}>
+              Delete
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm">
+              Outline
+            </Button>
+            <Button variant="ghost" size="sm">
+              Ghost
+            </Button>
+            <Button variant="link" size="sm">
+              Link
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 
