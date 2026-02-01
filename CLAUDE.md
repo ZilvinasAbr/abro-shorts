@@ -13,6 +13,7 @@ pnpm typecheck   # Run TypeScript type-checking only
 ```
 
 Platform-specific builds:
+
 ```bash
 pnpm build:mac   # Build for macOS
 pnpm build:win   # Build for Windows
@@ -38,6 +39,7 @@ Use `@renderer/*` to import from `src/renderer/src/*` in renderer code.
 ### TypeScript Configuration
 
 Two separate tsconfig files:
+
 - `tsconfig.node.json` - For main process and preload (Node.js target)
 - `tsconfig.web.json` - For renderer process (browser target)
 

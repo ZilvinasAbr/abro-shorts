@@ -1,56 +1,62 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useRef, useEffect } from 'react'
+import { AppProvider, useAppContext } from './context/AppContext'
+import { SearchInput } from './components/SearchInput'
+import { CommandList } from './components/CommandList'
+import { CommandForm } from './components/CommandForm'
+import { useSearch } from './hooks/useSearch'
+import { useKeyboard } from './hooks/useKeyboard'
 
-function App(): React.JSX.Element {
-  const [inputValue, setInputValue] = useState('')
+function Launcher(): React.JSX.Element {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const { state } = useAppContext()
+  const { commands, usageStats, searchQuery, isLoading, theme } = state
+
+  const filteredCommands = useSearch({ commands, usageStats, searchQuery })
+  useKeyboard({ filteredCommands, inputRef })
+
+  // Apply theme class to document
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+  }, [theme])
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[420px] items-center justify-center rounded-xl bg-background/80 backdrop-blur-xl">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    )
+  }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-8">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Tailwind + shadcn/ui</CardTitle>
-          <CardDescription>
-            Components are working! Try the button and input below.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="test-input">Test Input</Label>
-            <Input
-              id="test-input"
-              placeholder="Type something..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-            />
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={() => alert(`You typed: ${inputValue}`)}>
-              Submit
-            </Button>
-            <Button variant="secondary" onClick={() => setInputValue('')}>
-              Clear
-            </Button>
-            <Button variant="destructive" onClick={() => alert('Destructive!')}>
-              Delete
-            </Button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm">
-              Outline
-            </Button>
-            <Button variant="ghost" size="sm">
-              Ghost
-            </Button>
-            <Button variant="link" size="sm">
-              Link
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="flex h-[420px] flex-col overflow-hidden rounded-xl border border-border/50 bg-background/80 shadow-2xl backdrop-blur-xl">
+      <SearchInput ref={inputRef} />
+      <CommandList commands={filteredCommands} />
+      <CommandForm />
+      <div className="flex items-center justify-between border-t border-border px-4 py-2 text-xs text-muted-foreground">
+        <div className="flex gap-3">
+          <span>
+            <kbd className="rounded border bg-muted px-1 py-0.5">Enter</kbd> Run
+          </span>
+          <span>
+            <kbd className="rounded border bg-muted px-1 py-0.5">Tab</kbd> Edit
+          </span>
+          <span>
+            <kbd className="rounded border bg-muted px-1 py-0.5">Cmd+N</kbd> New
+          </span>
+        </div>
+        <span>{filteredCommands.length} commands</span>
+      </div>
     </div>
+  )
+}
+
+function App(): React.JSX.Element {
+  return (
+    <AppProvider>
+      <div className="p-2">
+        <Launcher />
+      </div>
+    </AppProvider>
   )
 }
 

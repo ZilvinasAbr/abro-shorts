@@ -1,16 +1,41 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import type { AbroShortsAPI, Command, Settings } from '../shared/types'
 
-// Custom APIs for renderer
-const api = {}
+const abroshorts: AbroShortsAPI = {
+  commands: {
+    load: () => ipcRenderer.invoke('abroshorts:commands:load'),
+    save: (command: Command) => ipcRenderer.invoke('abroshorts:commands:save', command),
+    delete: (id: string) => ipcRenderer.invoke('abroshorts:commands:delete', id),
+    execute: (command: Command) => ipcRenderer.invoke('abroshorts:commands:execute', command)
+  },
+  usage: {
+    get: () => ipcRenderer.invoke('abroshorts:usage:get'),
+    increment: (commandId: string) => ipcRenderer.invoke('abroshorts:usage:increment', commandId)
+  },
+  settings: {
+    get: () => ipcRenderer.invoke('abroshorts:settings:get'),
+    save: (settings: Settings) => ipcRenderer.invoke('abroshorts:settings:save', settings)
+  },
+  window: {
+    hide: () => ipcRenderer.send('abroshorts:window:hide')
+  },
+  onWindowToggle: (callback: () => void) => {
+    const handler = (): void => callback()
+    ipcRenderer.on('abroshorts:window:toggle', handler)
+    return () => ipcRenderer.removeListener('abroshorts:window:toggle', handler)
+  },
+  onThemeChange: (callback: (theme: 'light' | 'dark') => void) => {
+    const handler = (_: unknown, theme: 'light' | 'dark'): void => callback(theme)
+    ipcRenderer.on('abroshorts:theme:change', handler)
+    return () => ipcRenderer.removeListener('abroshorts:theme:change', handler)
+  }
+}
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', api)
+    contextBridge.exposeInMainWorld('abroshorts', abroshorts)
   } catch (error) {
     console.error(error)
   }
@@ -18,5 +43,5 @@ if (process.contextIsolated) {
   // @ts-ignore (define in dts)
   window.electron = electronAPI
   // @ts-ignore (define in dts)
-  window.api = api
+  window.abroshorts = abroshorts
 }

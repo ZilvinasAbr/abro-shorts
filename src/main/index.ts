@@ -1,24 +1,36 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, globalShortcut, ipcMain, nativeTheme, screen } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
+import { registerAllHandlers } from './ipc'
+import { loadSettings } from './storage/settings'
+
+let mainWindow: BrowserWindow | null = null
 
 function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+  const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize
+
+  mainWindow = new BrowserWindow({
+    width: 680,
+    height: 420,
+    x: Math.floor((screenWidth - 680) / 2),
+    y: Math.floor((screenHeight - 420) / 2 - 100), // Slightly above center
     show: false,
-    autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    frame: false,
+    transparent: true,
+    resizable: false,
+    movable: false,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    vibrancy: 'popover',
+    visualEffectState: 'active',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
     }
   })
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+  mainWindow.on('blur', () => {
+    hideWindow()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -26,8 +38,6 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
@@ -35,40 +45,92 @@ function createWindow(): void {
   }
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+function showWindow(): void {
+  if (!mainWindow) return
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
+  const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize
+  mainWindow.setPosition(
+    Math.floor((screenWidth - 680) / 2),
+    Math.floor((screenHeight - 420) / 2 - 100)
+  )
+
+  mainWindow.show()
+  mainWindow.focus()
+  mainWindow.webContents.send('abroshorts:window:toggle')
+}
+
+function hideWindow(): void {
+  if (!mainWindow) return
+  mainWindow.hide()
+}
+
+function toggleWindow(): void {
+  if (!mainWindow) return
+
+  if (mainWindow.isVisible()) {
+    hideWindow()
+  } else {
+    showWindow()
+  }
+}
+
+async function registerGlobalShortcut(): Promise<void> {
+  const settings = await loadSettings()
+  const shortcut = settings.shortcut || 'Alt+Space'
+
+  globalShortcut.unregisterAll()
+
+  const registered = globalShortcut.register(shortcut, toggleWindow)
+  if (!registered) {
+    console.error(`Failed to register global shortcut: ${shortcut}`)
+  }
+}
+
+function sendThemeToRenderer(): void {
+  if (!mainWindow) return
+  const theme = nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
+  mainWindow.webContents.send('abroshorts:theme:change', theme)
+}
+
+app.whenReady().then(async () => {
+  electronApp.setAppUserModelId('com.abroshorts')
+
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  registerAllHandlers()
+
+  ipcMain.on('abroshorts:window:hide', () => {
+    hideWindow()
+  })
 
   createWindow()
+  await registerGlobalShortcut()
+
+  // Send initial theme
+  if (mainWindow) {
+    mainWindow.webContents.on('did-finish-load', () => {
+      sendThemeToRenderer()
+    })
+  }
+
+  // Watch for theme changes
+  nativeTheme.on('updated', () => {
+    sendThemeToRenderer()
+  })
 
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll()
+})
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
