@@ -8,6 +8,9 @@ interface UseKeyboardOptions {
   inputRef: React.RefObject<HTMLInputElement | null>
 }
 
+// Valid shortcut keys (a-z, excluding 'f' which is reserved for search)
+const SHORTCUT_KEYS = new Set('abcdeghijklmnopqrstuvwxyz'.split(''))
+
 export function useKeyboard({ filteredCommands, inputRef }: UseKeyboardOptions): void {
   const { state, dispatch } = useAppContext()
   const { executeCommand, deleteCommand } = useCommands()
@@ -16,6 +19,16 @@ export function useKeyboard({ filteredCommands, inputRef }: UseKeyboardOptions):
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (isFormOpen) return
+
+      // Ignore shortcuts when typing in search input
+      if (document.activeElement === inputRef.current) {
+        // Still allow Escape to close
+        if (e.key === 'Escape') {
+          e.preventDefault()
+          inputRef.current?.blur()
+        }
+        return
+      }
 
       switch (e.key) {
         case 'ArrowDown':
@@ -40,6 +53,7 @@ export function useKeyboard({ filteredCommands, inputRef }: UseKeyboardOptions):
             executeCommand(filteredCommands[selectedIndex])
           } else if (searchQuery.trim() && filteredCommands.length === 0) {
             // Create new command from search query
+            dispatch({ type: 'SET_EDITING_COMMAND', payload: null })
             dispatch({ type: 'SET_FORM_OPEN', payload: true })
           }
           break
@@ -49,12 +63,10 @@ export function useKeyboard({ filteredCommands, inputRef }: UseKeyboardOptions):
           window.abroshorts.window.hide()
           break
 
-        case 'Tab':
+        case 'f':
+          // 'f' is reserved to focus the search input
           e.preventDefault()
-          if (filteredCommands[selectedIndex]) {
-            dispatch({ type: 'SET_EDITING_COMMAND', payload: filteredCommands[selectedIndex] })
-            dispatch({ type: 'SET_FORM_OPEN', payload: true })
-          }
+          inputRef.current?.focus()
           break
 
         case 'n':
@@ -79,6 +91,20 @@ export function useKeyboard({ filteredCommands, inputRef }: UseKeyboardOptions):
             deleteCommand(filteredCommands[selectedIndex].id)
           }
           break
+
+        default:
+          // Handle single-key shortcuts (a-z, excluding 'f')
+          if (SHORTCUT_KEYS.has(e.key) && !e.metaKey && !e.ctrlKey && !e.altKey) {
+            e.preventDefault()
+            const shortcutMap = window.__shortcutMap
+            if (shortcutMap) {
+              const commandIndex = shortcutMap.get(e.key)
+              if (commandIndex !== undefined && filteredCommands[commandIndex]) {
+                executeCommand(filteredCommands[commandIndex])
+              }
+            }
+          }
+          break
       }
     },
     [
@@ -86,6 +112,7 @@ export function useKeyboard({ filteredCommands, inputRef }: UseKeyboardOptions):
       selectedIndex,
       filteredCommands,
       searchQuery,
+      inputRef,
       dispatch,
       executeCommand,
       deleteCommand
@@ -96,11 +123,4 @@ export function useKeyboard({ filteredCommands, inputRef }: UseKeyboardOptions):
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleKeyDown])
-
-  // Auto-focus input on mount and when form closes
-  useEffect(() => {
-    if (!isFormOpen && inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [isFormOpen, inputRef])
 }
