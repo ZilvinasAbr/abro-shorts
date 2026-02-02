@@ -77,7 +77,7 @@ export function CommandForm(): React.JSX.Element {
 
   return (
     <Dialog open={isFormOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" onEscapeKeyDown={(e) => e.stopPropagation()}>
         <DialogHeader>
           <DialogTitle>{editingCommand ? 'Edit Command' : 'New Command'}</DialogTitle>
           <DialogDescription>
