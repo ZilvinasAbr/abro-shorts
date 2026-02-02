@@ -60,3 +60,4 @@ When working on tasks, commit incremental changes that make logical sense:
 - Each commit should leave the codebase in a valid state
 - Write clear commit messages describing what changed and why
 - Prefer smaller, focused commits over large monolithic ones
+- Do not include "Co-authored-by" or any similar comment in the commit message or PR description.
