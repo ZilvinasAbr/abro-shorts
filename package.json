@@ -78,6 +78,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.13",
+    "@commitlint/cli": "20.4.0",
+    "@commitlint/config-conventional": "20.4.0",
     "@electron-toolkit/tsconfig": "^2.0.0",
     "@tailwindcss/vite": "4.1.18",
     "@types/node": "^22.19.1",
