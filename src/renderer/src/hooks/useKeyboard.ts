@@ -20,15 +20,8 @@ export function useKeyboard({ filteredCommands, inputRef }: UseKeyboardOptions):
     (e: KeyboardEvent) => {
       if (isFormOpen) return
 
-      // Ignore shortcuts when typing in search input
-      if (document.activeElement === inputRef.current) {
-        // Still allow Escape to close
-        if (e.key === 'Escape') {
-          e.preventDefault()
-          inputRef.current?.blur()
-        }
-        return
-      }
+      // When search input is focused, allow navigation but ignore other shortcuts
+      const isInputFocused = document.activeElement === inputRef.current
 
       switch (e.key) {
         case 'ArrowDown':
@@ -59,18 +52,24 @@ export function useKeyboard({ filteredCommands, inputRef }: UseKeyboardOptions):
           break
 
         case 'Escape':
+          if (isInputFocused) {
+            e.preventDefault()
+            inputRef.current?.blur()
+            return
+          }
           e.preventDefault()
           window.abroshorts.window.hide()
           break
 
         case 'f':
-          // 'f' is reserved to focus the search input
+          // Don't focus if already focused
+          if (isInputFocused) return
           e.preventDefault()
           inputRef.current?.focus()
           break
 
         case 'n':
-          if (e.metaKey) {
+          if (e.metaKey && !isInputFocused) {
             e.preventDefault()
             dispatch({ type: 'SET_EDITING_COMMAND', payload: null })
             dispatch({ type: 'SET_FORM_OPEN', payload: true })
@@ -78,7 +77,7 @@ export function useKeyboard({ filteredCommands, inputRef }: UseKeyboardOptions):
           break
 
         case 'e':
-          if (e.metaKey && filteredCommands[selectedIndex]) {
+          if (e.metaKey && !isInputFocused && filteredCommands[selectedIndex]) {
             e.preventDefault()
             dispatch({ type: 'SET_EDITING_COMMAND', payload: filteredCommands[selectedIndex] })
             dispatch({ type: 'SET_FORM_OPEN', payload: true })
@@ -86,15 +85,21 @@ export function useKeyboard({ filteredCommands, inputRef }: UseKeyboardOptions):
           break
 
         case 'Backspace':
-          if (e.metaKey && filteredCommands[selectedIndex]) {
+          if (e.metaKey && !isInputFocused && filteredCommands[selectedIndex]) {
             e.preventDefault()
             deleteCommand(filteredCommands[selectedIndex].id)
           }
           break
 
         default:
-          // Handle single-key shortcuts (a-z, excluding 'f')
-          if (SHORTCUT_KEYS.has(e.key) && !e.metaKey && !e.ctrlKey && !e.altKey) {
+          // Handle single-key shortcuts (a-z, excluding 'f') - only when input is not focused
+          if (
+            !isInputFocused &&
+            SHORTCUT_KEYS.has(e.key) &&
+            !e.metaKey &&
+            !e.ctrlKey &&
+            !e.altKey
+          ) {
             e.preventDefault()
             const shortcutMap = window.__shortcutMap
             if (shortcutMap) {
