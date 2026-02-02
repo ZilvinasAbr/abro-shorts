@@ -61,3 +61,17 @@ When working on tasks, commit incremental changes that make logical sense:
 - Write clear commit messages describing what changed and why
 - Prefer smaller, focused commits over large monolithic ones
 - Do not include "Co-authored-by" or any similar comment in the commit message or PR description.
+
+**Commit message format** (enforced by commitlint):
+
+```
+<type>: <subject>
+```
+
+- **Type** (lowercase): `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test`
+- **Subject** (lowercase): brief description, not sentence-case
+
+Examples:
+- `fix: add min-h-0 to ScrollArea to enable scrolling`
+- `feat: add dark mode toggle`
+- `docs: update installation instructions`
