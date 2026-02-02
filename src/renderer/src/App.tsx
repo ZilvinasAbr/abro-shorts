@@ -19,6 +19,14 @@ function Launcher(): React.JSX.Element {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
 
+  // Reset input focus when window is shown
+  useEffect(() => {
+    const unsubscribe = window.abroshorts.onWindowToggle(() => {
+      inputRef.current?.blur()
+    })
+    return unsubscribe
+  }, [])
+
   if (isLoading) {
     return (
       <div className="flex h-[420px] items-center justify-center rounded-xl bg-background/80 backdrop-blur-xl">
