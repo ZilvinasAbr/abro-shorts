@@ -19,12 +19,14 @@ interface CommandItemProps {
   command: Command
   isSelected: boolean
   onSelect: () => void
+  shortcut?: string
 }
 
 export function CommandItem({
   command,
   isSelected,
-  onSelect
+  onSelect,
+  shortcut
 }: CommandItemProps): React.JSX.Element {
   const { dispatch } = useAppContext()
   const { executeCommand, deleteCommand } = useCommands()
@@ -52,6 +54,11 @@ export function CommandItem({
             isSelected ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
           }`}
         >
+          {shortcut && (
+            <span className="w-5 text-center text-xs font-mono text-muted-foreground/70">
+              [{shortcut}]
+            </span>
+          )}
           <TerminalIcon className="size-4 shrink-0 text-muted-foreground" />
           <div className="min-w-0 flex-1">
             <div className="truncate font-medium">{command.name}</div>

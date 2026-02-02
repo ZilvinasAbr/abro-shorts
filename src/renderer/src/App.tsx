@@ -35,10 +35,10 @@ function Launcher(): React.JSX.Element {
       <div className="flex items-center justify-between border-t border-border px-4 py-2 text-xs text-muted-foreground">
         <div className="flex gap-3">
           <span>
-            <kbd className="rounded border bg-muted px-1 py-0.5">Enter</kbd> Run
+            <kbd className="rounded border bg-muted px-1 py-0.5">a-z</kbd> Run
           </span>
           <span>
-            <kbd className="rounded border bg-muted px-1 py-0.5">Tab</kbd> Edit
+            <kbd className="rounded border bg-muted px-1 py-0.5">f</kbd> Search
           </span>
           <span>
             <kbd className="rounded border bg-muted px-1 py-0.5">Cmd+N</kbd> New
